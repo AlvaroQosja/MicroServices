@@ -1,1 +1,11 @@
-@OrderServices_HostAddress = http://localhost:5226
+
+POST http://localhost:5002/orders
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "quantity": 1
+}
+
+###
+GET http://localhost:5002/orders/4
