@@ -1,1 +1,4 @@
-@ProductServices_HostAddress = http://localhost:5002
+GET http://localhost:5001/products
+
+###
+GET http://localhost:5001/products/1

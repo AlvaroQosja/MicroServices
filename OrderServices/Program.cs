@@ -1,16 +1,18 @@
-var builder = WebApplication.CreateBuilder(args);
+using OrderServices.Data;
+using OrderServices.Services;
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+builder.Services.AddSingleton<OrderStore>();
+
+builder.Services.AddHttpClient<ProductClient>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5001/");
+});
+
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
