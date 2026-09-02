@@ -1,27 +1,43 @@
-﻿using System.Net;
-using OrderServices.Models;
+﻿using OrderServices.Models;
 
-namespace OrderServices.Services
+namespace OrderServices.Services;
+
+public class ProductClient
 {
-    public class ProductClient
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<ProductClient> _logger;
+
+    public ProductClient(HttpClient httpClient, ILogger<ProductClient> logger)
     {
-        private readonly HttpClient _httpClient;
+        _httpClient = httpClient;
+        _logger = logger;
+    }
 
-        public ProductClient(HttpClient httpClient)
+    public async Task<Product> GetProduct(int id)
+    {
+        try
         {
-            _httpClient = httpClient;
+            var response = await _httpClient.GetAsync($"api/products/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var product = await response.Content.ReadFromJsonAsync<Product>();
+                if (product != null)
+                {
+                    return product;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Product Service error for Product ID {Id}", id);
         }
 
-        public async Task<Product?> GetProduct(int id)
+        return new Product
         {
-            var response = await _httpClient.GetAsync($"products/{id}");
-
-            if (response.StatusCode == HttpStatusCode.NotFound)
-                return null;
-
-            response.EnsureSuccessStatusCode();
-
-            return await response.Content.ReadFromJsonAsync<Product>();
-        }
+            Id = id,
+            Name = "Unknown product",
+            Price = 0m
+        };
     }
 }
